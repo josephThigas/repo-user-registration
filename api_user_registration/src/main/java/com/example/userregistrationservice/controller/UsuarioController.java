@@ -2,6 +2,7 @@ package com.example.userregistrationservice.controller;
 
 import com.example.userregistrationservice.config.Logger;
 import com.example.userregistrationservice.dto.UsuarioRequest;
+import com.example.userregistrationservice.dto.UsuarioResponse;
 import com.example.userregistrationservice.service.UsuarioService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -11,6 +12,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/usuarios")
@@ -37,5 +40,11 @@ public class UsuarioController {
         logger.info("Criando usuário: " + usuarioRequest.nome());
         usuarioService.salvarUsuario(usuarioRequest);
         return new ResponseEntity<>(HttpStatus.CREATED);
+    }
+
+    @GetMapping
+    @Operation(summary = "Listar usuários", description = "Retorna todos os usuários cadastrados com seus endereços")
+    public ResponseEntity<List<UsuarioResponse>> listarUsuarios() {
+        return ResponseEntity.ok(usuarioService.listarUsuarios());
     }
 }

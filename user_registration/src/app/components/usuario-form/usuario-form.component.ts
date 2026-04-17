@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { UsuarioService } from '../../services/usuario.service';
@@ -11,11 +11,12 @@ import { Usuario } from '../../models/usuario.model';
   templateUrl: './usuario-form.component.html',
   styleUrl: './usuario-form.component.scss',
 })
-export class UsuarioFormComponent {
+export class UsuarioFormComponent implements OnInit {
   form: FormGroup;
   mensagemSucesso = '';
   mensagemErro = '';
   carregando = false;
+  usuarios: Usuario[] = [];
 
   constructor(
     private fb: FormBuilder,
@@ -25,6 +26,21 @@ export class UsuarioFormComponent {
       nome: ['', [Validators.required, Validators.minLength(3)]],
       email: ['', [Validators.required, Validators.email]],
       cep: ['', [Validators.required, Validators.pattern(/^\d{8}$/)]],
+    });
+  }
+
+  ngOnInit(): void {
+    this.carregarUsuarios();
+  }
+
+  carregarUsuarios(): void {
+    this.usuarioService.listar().subscribe({
+      next: (usuarios) => {
+        this.usuarios = usuarios;
+      },
+      error: () => {
+        this.mensagemErro = 'Erro ao carregar a lista de usuários.';
+      }
     });
   }
 
@@ -44,6 +60,7 @@ export class UsuarioFormComponent {
       next: () => {
         this.mensagemSucesso = 'Usuário cadastrado com sucesso!';
         this.form.reset();
+        this.carregarUsuarios();
         this.carregando = false;
       },
       error: (err) => {
