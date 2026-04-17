@@ -74,8 +74,13 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Override
     public void removerUsuario(Long id) {
-        var usuario = repository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
+        if (!repository.existsById(id)) {
+            throw new IllegalArgumentException("Usuário não encontrado");
+        }
+        var enderecos = enderecoRepository.findByUsuarioId(id);
+        if (!enderecos.isEmpty()) {
+            enderecoRepository.deleteAll(enderecos);
+        }
         repository.deleteById(id);
     }
 }
