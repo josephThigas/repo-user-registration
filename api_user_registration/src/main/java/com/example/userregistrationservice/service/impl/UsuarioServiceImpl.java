@@ -66,7 +66,8 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     private void salvarEndereco(UsuarioRequest usuarioRequest, Usuario usuarioSalvo) {
-        var enderecoEncontrado = enderecoService.getCepClient(usuarioRequest.cep());
+        var cep = usuarioRequest.cep().replaceAll("\\D", "");
+        var enderecoEncontrado = enderecoService.getCepClient(cep);
 
         enderecoEncontrado.setUsuario(usuarioSalvo);
         enderecoRepository.save(enderecoEncontrado);
