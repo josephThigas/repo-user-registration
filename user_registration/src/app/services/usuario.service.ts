@@ -19,11 +19,7 @@ export class UsuarioService {
     return this.http.get<Usuario[]>(this.apiUrl);
   }
 
-  /**
-   * Usa responseType 'text' para o DELETE sempre concluir o observable mesmo quando
-   * o Spring devolve JSON ({ "mensagem": "..." }), evitando resposta pendente com delete<void>.
-   */
-  excluir(id: number): Observable<string> {
-    return this.http.delete(`${this.apiUrl}/${id}`, { responseType: 'text' });
+  excluir(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 }
