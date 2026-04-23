@@ -17,6 +17,7 @@ export class UsuarioFormComponent implements OnInit {
   mensagemErro = '';
   carregando = false;
   usuarios: Usuario[] = [];
+  usuarioParaExcluir: Usuario | null = null;
 
   constructor(
     private fb: FormBuilder,
@@ -66,6 +67,43 @@ export class UsuarioFormComponent implements OnInit {
       error: (err) => {
         this.mensagemErro = err.error?.message || 'Erro ao cadastrar usuário.';
         this.carregando = false;
+      },
+    });
+  }
+
+  abrirConfirmacaoExclusao(usuario: Usuario): void {
+    if (usuario.id == null) {
+      return;
+    }
+    this.mensagemSucesso = '';
+    this.mensagemErro = '';
+    this.usuarioParaExcluir = usuario;
+  }
+
+  fecharConfirmacaoExclusao(): void {
+    this.usuarioParaExcluir = null;
+  }
+
+  confirmarExclusao(): void {
+    const id = this.usuarioParaExcluir?.id;
+    if (id == null) {
+      return;
+    }
+
+    this.usuarioParaExcluir = null;
+    this.mensagemSucesso = '';
+    this.mensagemErro = '';
+    this.usuarioService.excluir(id).subscribe({
+      next: () => {
+        this.mensagemSucesso = 'Usuário excluído com sucesso.';
+        this.carregarUsuarios();
+      },
+      error: (err) => {
+        this.mensagemErro =
+          err.status === 404
+            ? 'Usuário não encontrado.'
+            : 'Não foi possível concluir a exclusão no servidor.';
+        this.carregarUsuarios();
       },
     });
   }

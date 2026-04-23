@@ -56,6 +56,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     private EnderecoResponse mapEnderecoToResponse(Endereco endereco) {
         return new EnderecoResponse(
+                endereco.getId(),
                 endereco.getCep(),
                 endereco.getLogradouro(),
                 endereco.getLocalidade(),
@@ -65,11 +66,24 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     private void salvarEndereco(UsuarioRequest usuarioRequest, Usuario usuarioSalvo) {
-        var enderecoEncontrado = enderecoService.getCepClient(usuarioRequest.cep());
+        var cep = usuarioRequest.cep().replaceAll("\\D", "");
+        var enderecoEncontrado = enderecoService.getCepClient(cep);
 
         enderecoEncontrado.setUsuario(usuarioSalvo);
         enderecoRepository.save(enderecoEncontrado);
         repository.save(usuarioSalvo);
+    }
+
+    @Override
+    public void removerUsuario(Long id) {
+        if (!repository.existsById(id)) {
+            throw new IllegalArgumentException("Usuário não encontrado");
+        }
+        var enderecos = enderecoRepository.findByUsuarioId(id);
+        if (!enderecos.isEmpty()) {
+            enderecoRepository.deleteAll(enderecos);
+        }
+        repository.deleteById(id);
     }
 }
 
