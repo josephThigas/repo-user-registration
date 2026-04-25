@@ -19,7 +19,7 @@
 </div>
 
 <div class="form-container">
-  <h2>Cadastro de Usuário</h2>
+  <h2>{{ modoEdicao ? 'Editar Usuário' : 'Cadastro de Usuário' }}</h2>
 
   <div *ngIf="mensagemSucesso" class="alert success">{{ mensagemSucesso }}</div>
   <div *ngIf="mensagemErro" class="alert error">{{ mensagemErro }}</div>
@@ -49,9 +49,14 @@
       </small>
     </div>
 
-    <button type="submit" [disabled]="carregando">
-      {{ carregando ? 'Cadastrando...' : 'Cadastrar' }}
-    </button>
+    <div class="form-buttons">
+      <button type="submit" [disabled]="carregando">
+        {{ carregando ? (modoEdicao ? 'Salvando Alterações...' : 'Cadastrando...') : (modoEdicao ? 'Salvar Alterações' : 'Cadastrar') }}
+      </button>
+      <button *ngIf="modoEdicao" type="button" class="btn-cancelar" (click)="cancelarEdicao()" [disabled]="carregando">
+        Cancelar Edição
+      </button>
+    </div>
   </form>
 </div>
 
@@ -84,14 +89,23 @@
           </ng-template>
         </td>
         <td class="acoes">
-          <button
-            type="button"
-            class="btn-excluir"
-            *ngIf="usuario.id != null"
-            (click)="abrirConfirmacaoExclusao(usuario)"
-          >
-            Excluir
-          </button>
+          <div class="acoes-botoes">
+            <button
+              type="button"
+              class="btn-editar"
+              (click)="prepararEdicao(usuario)"
+            >
+              Editar
+            </button>
+            <button
+              type="button"
+              class="btn-excluir"
+              *ngIf="usuario.id != null"
+              (click)="abrirConfirmacaoExclusao(usuario)"
+            >
+              Excluir
+            </button>
+          </div>
         </td>
       </tr>
     </tbody>

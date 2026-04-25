@@ -85,5 +85,22 @@ public class UsuarioServiceImpl implements UsuarioService {
         }
         repository.deleteById(id);
     }
+
+        @Override
+        public void atualizarUsuario(Long id, UsuarioRequest usuarioRequest) {
+            var usuario = repository.findById(id)
+                    .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
+
+            usuario.setNome(usuarioRequest.nome());
+            usuario.setEmail(usuarioRequest.email());
+            repository.save(usuario);
+
+            // Atualizar ou criar novo endereço
+            var enderecos = enderecoRepository.findByUsuarioId(id);
+            if (!enderecos.isEmpty()) {
+                enderecoRepository.deleteAll(enderecos);
+            }
+            this.salvarEndereco(usuarioRequest, usuario);
+        }
 }
 

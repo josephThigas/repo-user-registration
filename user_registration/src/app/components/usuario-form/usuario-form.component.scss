@@ -86,6 +86,50 @@
   }
 }
 
+.form-buttons {
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+
+  button {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+
+    &[type='submit'] {
+      background-color: #4a90d9;
+      color: #fff;
+
+      &:hover:not(:disabled) {
+        background-color: #357abd;
+      }
+
+      &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+    }
+  }
+}
+
+.btn-cancelar {
+  background-color: #95a5a6 !important;
+  color: #fff;
+
+  &:hover:not(:disabled) {
+    background-color: #7f8c8d !important;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
 .modal-root {
   position: fixed;
   inset: 0;
@@ -191,15 +235,34 @@
   }
 }
 
+.acoes .acoes-botoes {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.acoes .btn-editar,
 .acoes .btn-excluir {
   width: auto;
   padding: 8px 14px;
   font-size: 13px;
-  background-color: #c0392b;
-  color: #fff;
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  color: #fff;
+}
+
+.acoes .btn-editar {
+  background-color: #4a90d9;
+
+  &:hover:not(:disabled) {
+    background-color: #357abd;
+  }
+}
+
+.acoes .btn-excluir {
+  background-color: #c0392b;
 
   &:hover:not(:disabled) {
     background-color: #a93226;

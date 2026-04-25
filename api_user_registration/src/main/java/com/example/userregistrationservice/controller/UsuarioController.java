@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.PutMapping;
 
 import java.util.List;
 
@@ -70,4 +71,23 @@ public class UsuarioController {
             return ResponseEntity.notFound().build();
         }
     }
+
+        @PutMapping("/{id}")
+        @Operation(summary = "Atualizar usuário", description = "Atualiza os dados de um usuário existente")
+        @ApiResponses(value = {
+                @ApiResponse(responseCode = "204", description = "Usuário atualizado com sucesso"),
+                @ApiResponse(responseCode = "400", description = "Dados inválidos fornecidos"),
+                @ApiResponse(responseCode = "404", description = "Usuário não encontrado"),
+                @ApiResponse(responseCode = "500", description = "Erro interno do servidor")
+        })
+        public ResponseEntity<Void> atualizarUsuario(@PathVariable Long id, @RequestBody UsuarioRequest usuarioRequest) {
+            try {
+                logger.info("Atualizando usuário com ID: " + id);
+                usuarioService.atualizarUsuario(id, usuarioRequest);
+                return ResponseEntity.noContent().build();
+            } catch (IllegalArgumentException e) {
+                logger.error("Erro ao atualizar usuário: " + e.getMessage());
+                return ResponseEntity.notFound().build();
+            }
+        }
 }
