@@ -1,5 +1,4 @@
 package com.example.userregistrationservice.service.impl;
-
 import com.example.userregistrationservice.dto.EnderecoResponse;
 import com.example.userregistrationservice.dto.UsuarioRequest;
 import com.example.userregistrationservice.dto.UsuarioResponse;
@@ -86,21 +85,33 @@ public class UsuarioServiceImpl implements UsuarioService {
         repository.deleteById(id);
     }
 
-        @Override
-        public void atualizarUsuario(Long id, UsuarioRequest usuarioRequest) {
-            var usuario = repository.findById(id)
-                    .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
+    @Override
+    public void atualizarUsuario(Long id, UsuarioRequest usuarioRequest) {
+        var usuario = repository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
 
-            usuario.setNome(usuarioRequest.nome());
-            usuario.setEmail(usuarioRequest.email());
-            repository.save(usuario);
+        usuario.setNome(usuarioRequest.nome());
+        usuario.setEmail(usuarioRequest.email());
+        repository.save(usuario);
 
-            // Atualizar ou criar novo endereço
-            var enderecos = enderecoRepository.findByUsuarioId(id);
-            if (!enderecos.isEmpty()) {
-                enderecoRepository.deleteAll(enderecos);
-            }
+        var enderecos = enderecoRepository.findByUsuarioId(id);
+        if (enderecos.isEmpty()) {
             this.salvarEndereco(usuarioRequest, usuario);
+            return;
         }
+
+        var enderecoExistente = enderecos.get(0);
+        var cep = usuarioRequest.cep().replaceAll("\\D", "");
+        var enderecoAtualizado = enderecoService.getCepClient(cep);
+
+        enderecoExistente.setCep(enderecoAtualizado.getCep());
+        enderecoExistente.setLogradouro(enderecoAtualizado.getLogradouro());
+        enderecoExistente.setLocalidade(enderecoAtualizado.getLocalidade());
+        enderecoExistente.setUf(enderecoAtualizado.getUf());
+        enderecoExistente.setEstado(enderecoAtualizado.getEstado());
+        enderecoExistente.setUsuario(usuario);
+
+        enderecoRepository.save(enderecoExistente);
+    }
 }
 

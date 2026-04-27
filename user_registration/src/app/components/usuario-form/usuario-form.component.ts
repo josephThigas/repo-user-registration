@@ -53,43 +53,60 @@ export class UsuarioFormComponent implements OnInit {
       return;
     }
 
-    this.carregando = true;
-    this.mensagemSucesso = '';
-    this.mensagemErro = '';
-
-    const usuario: Usuario = this.form.value;
+    this.limparMensagens();
 
     if (this.modoEdicao && this.idUsuarioEmEdicao !== null) {
-      // Modo atualização
-      this.usuarioService.atualizarUsuario(this.idUsuarioEmEdicao, usuario).subscribe({
-        next: () => {
-          this.mensagemSucesso = 'Usuário atualizado com sucesso!';
-          this.form.reset();
-          this.modoEdicao = false;
-          this.idUsuarioEmEdicao = null;
-          this.carregarUsuarios();
-          this.carregando = false;
-        },
-        error: (err) => {
-          this.mensagemErro = err.error?.message || 'Erro ao atualizar usuário.';
-          this.carregando = false;
-        },
-      });
+      this.atualizarUsuario();
     } else {
-      // Modo criação
-      this.usuarioService.cadastrar(usuario).subscribe({
-        next: () => {
-          this.mensagemSucesso = 'Usuário cadastrado com sucesso!';
-          this.form.reset();
-          this.carregarUsuarios();
-          this.carregando = false;
-        },
-        error: (err) => {
-          this.mensagemErro = err.error?.message || 'Erro ao cadastrar usuário.';
-          this.carregando = false;
-        },
-      });
+      this.criarUsuario();
     }
+  }
+
+  private criarUsuario(): void {
+    this.carregando = true;
+    const usuario: Usuario = this.form.value;
+
+    this.usuarioService.cadastrar(usuario).subscribe({
+      next: () => {
+        this.mensagemSucesso = 'Usuário cadastrado com sucesso!';
+        this.form.reset();
+        this.carregarUsuarios();
+        this.carregando = false;
+      },
+      error: (err) => {
+        this.mensagemErro = err.error?.message || 'Erro ao cadastrar usuário.';
+        this.carregando = false;
+      },
+    });
+  }
+
+  private atualizarUsuario(): void {
+    if (this.idUsuarioEmEdicao === null) {
+      return;
+    }
+
+    this.carregando = true;
+    const usuario: Usuario = this.form.value;
+
+    this.usuarioService.atualizarUsuario(this.idUsuarioEmEdicao, usuario).subscribe({
+      next: () => {
+        this.mensagemSucesso = 'Usuário atualizado com sucesso!';
+        this.form.reset();
+        this.modoEdicao = false;
+        this.idUsuarioEmEdicao = null;
+        this.carregarUsuarios();
+        this.carregando = false;
+      },
+      error: (err) => {
+        this.mensagemErro = err.error?.message || 'Erro ao atualizar usuário.';
+        this.carregando = false;
+      },
+    });
+  }
+
+  private limparMensagens(): void {
+    this.mensagemSucesso = '';
+    this.mensagemErro = '';
   }
 
   prepararEdicao(usuario: Usuario): void {
